@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "target": "ES2016",
+    "module": "CommonJS",
+    "declaration": true
+  },
+  "include": [
+    "./**/*"
+  ]
+}
