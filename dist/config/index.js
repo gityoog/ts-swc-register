@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_1 = __importDefault(require("typescript"));
 const path_1 = __importDefault(require("path"));
+const tsconfig_paths_1 = __importDefault(require("tsconfig-paths"));
 function getConfig() {
     const configFile = typescript_1.default.findConfigFile(path_1.default.dirname(process.argv[1]), typescript_1.default.sys.fileExists);
     if (configFile) {
@@ -15,6 +16,12 @@ function getConfig() {
         const { options, errors } = typescript_1.default.parseJsonConfigFileContent(config, typescript_1.default.sys, path_1.default.dirname(configFile));
         if (errors.length > 0) {
             throw errors;
+        }
+        if (options.baseUrl) {
+            tsconfig_paths_1.default.register({
+                baseUrl: options.baseUrl,
+                paths: options.paths || {},
+            });
         }
         return tsCompilerOptionsToSwcConfig(options);
     }

@@ -1,6 +1,7 @@
 import ts from 'typescript'
 import path from 'path'
 import type { Options } from '@swc-node/core'
+import tsConfigPaths from 'tsconfig-paths'
 
 export default function getConfig() {
   const configFile = ts.findConfigFile(path.dirname(process.argv[1]), ts.sys.fileExists)
@@ -12,6 +13,12 @@ export default function getConfig() {
     const { options, errors } = ts.parseJsonConfigFileContent(config, ts.sys, path.dirname(configFile))
     if (errors.length > 0) {
       throw errors
+    }
+    if (options.baseUrl) {
+      tsConfigPaths.register({
+        baseUrl: options.baseUrl,
+        paths: options.paths || {},
+      })
     }
     return tsCompilerOptionsToSwcConfig(options)
   } else {
