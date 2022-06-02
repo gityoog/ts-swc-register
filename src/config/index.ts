@@ -1,7 +1,7 @@
 import ts from 'typescript'
 import path from 'path'
 import type { Options } from '@swc-node/core'
-import tsConfigPaths from 'tsconfig-paths'
+import * as tsConfigPaths from 'tsconfig-paths'
 
 export default function getConfig() {
   const configFile = ts.findConfigFile(path.dirname(process.argv[1]), ts.sys.fileExists)
