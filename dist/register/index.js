@@ -8,9 +8,22 @@ const pirates_1 = require("pirates");
 const core_1 = require("@swc-node/core");
 const module_1 = __importDefault(require("module"));
 const fs_1 = __importDefault(require("fs"));
+const nodeVersion = (process.versions.node.match(/^(\d+)\.(\d+)/) || [])
+    .slice(1)
+    .map(Number);
+// Use a simple regexp to replace `node:id` with `id` from source code
+function removeNodePrefix(code) {
+    if (nodeVersion[0] <= 14 && nodeVersion[1] < 18) {
+        return code.replace(/([\b\(])require\("node:([^"]+)"\)([\b\)])/g, '$1require("$2")$3');
+    }
+    return code;
+}
 function register(options = (0, config_1.default)()) {
-    const compile = function compile(source, filename) {
+    const compile = function compile(source, filename, rebuild) {
         const { code } = (0, core_1.transformSync)(source, filename, options);
+        if (rebuild) {
+            return removeNodePrefix(code);
+        }
         return code;
     };
     // @ts-ignore
@@ -25,7 +38,7 @@ function register(options = (0, config_1.default)()) {
                 throw error;
             }
             let content = fs_1.default.readFileSync(filename, 'utf8');
-            content = compile(content, filename, 'cjs');
+            content = compile(content, filename, true);
             module._compile(content, filename);
         }
     };
