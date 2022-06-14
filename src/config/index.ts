@@ -22,7 +22,7 @@ export default function getConfig() {
     }
     return tsCompilerOptionsToSwcConfig(options)
   } else {
-    throw new Error('No tsconfig.json found')
+    return tsCompilerOptionsToSwcConfig({})
   }
 }
 
