@@ -4,7 +4,7 @@ import type { Options } from '@swc-node/core'
 import * as tsConfigPaths from 'tsconfig-paths'
 
 export default function getConfig() {
-  const configFile = ts.findConfigFile(path.dirname(process.argv[1]), ts.sys.fileExists)
+  const configFile = process.argv[1] ? ts.findConfigFile(path.dirname(process.argv[1]), ts.sys.fileExists) : undefined
   if (configFile) {
     const { config, error } = ts.readConfigFile(configFile, ts.sys.readFile)
     if (error) {

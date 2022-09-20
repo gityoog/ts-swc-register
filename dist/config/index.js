@@ -30,7 +30,7 @@ const typescript_1 = __importDefault(require("typescript"));
 const path_1 = __importDefault(require("path"));
 const tsConfigPaths = __importStar(require("tsconfig-paths"));
 function getConfig() {
-    const configFile = typescript_1.default.findConfigFile(path_1.default.dirname(process.argv[1]), typescript_1.default.sys.fileExists);
+    const configFile = process.argv[1] ? typescript_1.default.findConfigFile(path_1.default.dirname(process.argv[1]), typescript_1.default.sys.fileExists) : undefined;
     if (configFile) {
         const { config, error } = typescript_1.default.readConfigFile(configFile, typescript_1.default.sys.readFile);
         if (error) {

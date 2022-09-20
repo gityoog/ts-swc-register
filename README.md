@@ -13,3 +13,7 @@ $ npm install git+https://github.com/gityoog/ts-swc-register.git --save-dev
 ```
 $ node -r ts-swc-register entry.ts
 ```
+
+## Changelog
+
+- 2022-09-20 修复 worker 新建 node 进程 空参数引起的报错
