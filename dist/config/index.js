@@ -128,6 +128,6 @@ function tsCompilerOptionsToSwcConfig(options) {
         dynamicImport: true,
         esModuleInterop: (_f = options.esModuleInterop) !== null && _f !== void 0 ? _f : false,
         keepClassNames: true,
-        paths: options.paths,
+        // paths: options.paths as Options['paths'],
     };
 }
