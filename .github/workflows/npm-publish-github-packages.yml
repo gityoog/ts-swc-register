@@ -4,9 +4,7 @@
 name: Node.js Package
 
 on:
-  push:
-    branches:
-    - main
+  workflow_dispatch:
 
 jobs:
   publish-gpr:
@@ -20,6 +18,8 @@ jobs:
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
-      - run: npm publish
+      - run: |
+          npm adduser
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
