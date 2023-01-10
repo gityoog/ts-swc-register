@@ -2,13 +2,19 @@
 
 support esm and cjs
 
-## 安装
+## INSTALL
+
+```
+$ npm install ts-swc-register --save-dev
+```
+
+or
 
 ```
 $ npm install git+https://github.com/gityoog/ts-swc-register.git --save-dev
 ```
 
-## 使用
+## USE
 
 ```
 $ node -r ts-swc-register entry.ts

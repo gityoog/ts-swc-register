@@ -1,6 +1,6 @@
 {
   "name": "ts-swc-register",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "ts-swc-register support esm and cjs",
   "main": "./dist/index.js",
   "scripts": {
@@ -8,7 +8,11 @@
     "build": "rimraf ./dist && tsc",
     "test": "rimraf ./dist && tsc && node -r ./dist/index.js ./script/test.ts"
   },
-  "author": "",
+  "author": "gityoog",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gityoog/ts-swc-register.git"
+  },
   "license": "ISC",
   "dependencies": {
     "@swc-node/core": "^1.9.0",
