@@ -19,7 +19,7 @@ function removeNodePrefix(code) {
 }
 function register(options = (0, config_1.default)()) {
     const compile = function compile(source, filename, rebuild) {
-        const { code } = (0, core_1.transformSync)(source, filename, options);
+        const { code } = (0, core_1.transformSync)(source, filename, Object.assign(Object.assign({}, options), { sourcemap: 'inline' }));
         if (rebuild) {
             return removeNodePrefix(code);
         }

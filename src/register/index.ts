@@ -26,7 +26,7 @@ function removeNodePrefix(code: string) {
 
 export default function register(options = getConfig()) {
   const compile: COMPILE = function compile(source, filename, rebuild) {
-    const { code } = transformSync(source, filename, options)
+    const { code } = transformSync(source, filename, { ...options, sourcemap: 'inline' })
     if (rebuild) {
       return removeNodePrefix(code)
     }
