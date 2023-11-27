@@ -1,6 +1,6 @@
 {
   "name": "ts-swc-register",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "ts-swc-register support esm and cjs",
   "main": "./dist/index.js",
   "scripts": {
@@ -27,6 +27,6 @@
   },
   "peerDependencies": {
     "tsconfig-paths": "^4.0.0",
-    "typescript": "^4.7.2"
+    "typescript": "^4.7.2 || ^5.0.0"
   }
 }
