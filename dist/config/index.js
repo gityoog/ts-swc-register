@@ -26,11 +26,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDefaultTsConfig = void 0;
 const typescript_1 = __importDefault(require("typescript"));
 const path_1 = __importDefault(require("path"));
 const tsConfigPaths = __importStar(require("tsconfig-paths"));
-function getConfig() {
-    const configFile = process.argv[1] ? typescript_1.default.findConfigFile(path_1.default.dirname(process.argv[1]), typescript_1.default.sys.fileExists) : undefined;
+function getConfig(file) {
+    const configFile = typescript_1.default.findConfigFile(file, typescript_1.default.sys.fileExists);
     if (configFile) {
         const { config, error } = typescript_1.default.readConfigFile(configFile, typescript_1.default.sys.readFile);
         if (error) {
@@ -48,11 +49,12 @@ function getConfig() {
         }
         return tsCompilerOptionsToSwcConfig(options);
     }
-    else {
-        return tsCompilerOptionsToSwcConfig({});
-    }
 }
 exports.default = getConfig;
+function getDefaultTsConfig() {
+    return tsCompilerOptionsToSwcConfig({});
+}
+exports.getDefaultTsConfig = getDefaultTsConfig;
 function toTsTarget(target) {
     switch (target) {
         case typescript_1.default.ScriptTarget.ES3:
@@ -99,21 +101,12 @@ function toModule(moduleKind) {
             throw new TypeError('Do not support system kind module');
     }
 }
-function createSourcemapOption(options) {
-    return options.sourceMap !== false
-        ? options.inlineSourceMap
-            ? 'inline'
-            : true
-        : options.inlineSourceMap
-            ? 'inline'
-            : false;
-}
 function tsCompilerOptionsToSwcConfig(options) {
     var _a, _b, _c, _d, _e, _f;
     return {
         target: toTsTarget((_a = options.target) !== null && _a !== void 0 ? _a : typescript_1.default.ScriptTarget.ES2018),
         module: toModule((_b = options.module) !== null && _b !== void 0 ? _b : typescript_1.default.ModuleKind.ES2015),
-        sourcemap: createSourcemapOption(options),
+        sourcemap: 'inline',
         jsx: Boolean(options.jsx),
         react: options.jsxFactory || options.jsxFragmentFactory || options.jsx || options.jsxImportSource
             ? {
@@ -127,7 +120,6 @@ function tsCompilerOptionsToSwcConfig(options) {
         emitDecoratorMetadata: (_e = options.emitDecoratorMetadata) !== null && _e !== void 0 ? _e : false,
         dynamicImport: true,
         esModuleInterop: (_f = options.esModuleInterop) !== null && _f !== void 0 ? _f : false,
-        keepClassNames: true,
-        // paths: options.paths as Options['paths'],
+        keepClassNames: true
     };
 }

@@ -1,1 +1,1 @@
-export default function register(options?: import("@swc-node/core").Options): void;
+export default function register(): () => void;

@@ -1,13 +1,82 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = __importDefault(require("../config"));
+const config_1 = __importStar(require("../config"));
 const pirates_1 = require("pirates");
 const core_1 = require("@swc-node/core");
-const module_1 = __importDefault(require("module"));
 const fs_1 = __importDefault(require("fs"));
+const module_1 = __importDefault(require("module"));
+const Module = (global.module && module.constructor.length > 1 ? module.constructor : module_1.default);
+function register() {
+    const extensions = Module._extensions;
+    const jsLoader = extensions['.js'];
+    extensions['.js'] = function (module, filename) {
+        try {
+            return jsLoader.call(this, module, filename);
+        }
+        catch (error) {
+            // console.log(error.message)
+            if (error.message.includes('Cannot use import statement outside a module') || error.code === 'ERR_REQUIRE_ESM') {
+                let content = fs_1.default.readFileSync(filename, 'utf8');
+                const { code } = (0, core_1.transformSync)(content, filename, Object.assign(Object.assign({}, tsConfig), { module: 'commonjs' }));
+                // console.log('transformSync:', filename)
+                module._compile(removeNodePrefix(code), filename);
+            }
+            else {
+                throw error;
+            }
+        }
+    };
+    return (0, pirates_1.addHook)((code, filename) => {
+        return compileTs(code, filename);
+    }, {
+        exts: ['.ts', '.tsx']
+    });
+}
+exports.default = register;
+let tsConfig;
+function compileTs(source, filename) {
+    if (!tsConfig) {
+        if (process.argv[1]) {
+            tsConfig = (0, config_1.default)(process.argv[1]);
+        }
+        if (!tsConfig) {
+            tsConfig = (0, config_1.default)(filename);
+        }
+        // console.log('tsConfig:', process.argv[1], filename)
+        if (!tsConfig) {
+            tsConfig = (0, config_1.getDefaultTsConfig)();
+            console.warn('tsconfig.json not found, use default tsconfig.');
+        }
+    }
+    const { code } = (0, core_1.transformSync)(source, filename, tsConfig);
+    return code;
+}
 const nodeVersion = (process.versions.node.match(/^(\d+)\.(\d+)/) || [])
     .slice(1)
     .map(Number);
@@ -17,32 +86,3 @@ function removeNodePrefix(code) {
     }
     return code;
 }
-function register(options = (0, config_1.default)()) {
-    const compile = function compile(source, filename, rebuild) {
-        const { code } = (0, core_1.transformSync)(source, filename, Object.assign(Object.assign({}, options), { sourcemap: 'inline' }));
-        if (rebuild) {
-            return removeNodePrefix(code);
-        }
-        return code;
-    };
-    // @ts-ignore
-    const extensions = module_1.default.Module._extensions;
-    const jsLoader = extensions['.js'];
-    extensions['.js'] = function (module, filename) {
-        try {
-            return jsLoader.call(this, module, filename);
-        }
-        catch (error) {
-            if (error.code !== 'ERR_REQUIRE_ESM') {
-                throw error;
-            }
-            let content = fs_1.default.readFileSync(filename, 'utf8');
-            content = compile(content, filename, true);
-            module._compile(content, filename);
-        }
-    };
-    (0, pirates_1.addHook)(compile, {
-        exts: ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx']
-    });
-}
-exports.default = register;
