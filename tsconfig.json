@@ -10,7 +10,8 @@
     "target": "ES2016",
     "module": "CommonJS",
     "outDir": "./dist",
-    "declaration": true
+    "declaration": true,
+    "skipLibCheck": true
   },
   "include": [
     "./src/**/*"
