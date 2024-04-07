@@ -3,8 +3,8 @@ import path from 'path'
 import type { Options } from '@swc-node/core'
 import * as tsConfigPaths from 'tsconfig-paths'
 
-export default function getConfig() {
-  const configFile = process.argv[1] ? ts.findConfigFile(path.dirname(process.argv[1]), ts.sys.fileExists) : undefined
+export default function getConfig(file: string) {
+  const configFile = ts.findConfigFile(file, ts.sys.fileExists)
   if (configFile) {
     const { config, error } = ts.readConfigFile(configFile, ts.sys.readFile)
     if (error) {
@@ -21,9 +21,11 @@ export default function getConfig() {
       })
     }
     return tsCompilerOptionsToSwcConfig(options)
-  } else {
-    return tsCompilerOptionsToSwcConfig({})
   }
+}
+
+export function getDefaultTsConfig() {
+  return tsCompilerOptionsToSwcConfig({})
 }
 
 function toTsTarget(target: ts.ScriptTarget): Options['target'] {
@@ -74,21 +76,11 @@ function toModule(moduleKind: ts.ModuleKind) {
   }
 }
 
-function createSourcemapOption(options: ts.CompilerOptions) {
-  return options.sourceMap !== false
-    ? options.inlineSourceMap
-      ? 'inline'
-      : true
-    : options.inlineSourceMap
-      ? 'inline'
-      : false
-}
-
 function tsCompilerOptionsToSwcConfig(options: ts.CompilerOptions): Options {
   return {
     target: toTsTarget(options.target ?? ts.ScriptTarget.ES2018),
     module: toModule(options.module ?? ts.ModuleKind.ES2015),
-    sourcemap: createSourcemapOption(options),
+    sourcemap: 'inline',
     jsx: Boolean(options.jsx),
     react:
       options.jsxFactory || options.jsxFragmentFactory || options.jsx || options.jsxImportSource
@@ -103,7 +95,6 @@ function tsCompilerOptionsToSwcConfig(options: ts.CompilerOptions): Options {
     emitDecoratorMetadata: options.emitDecoratorMetadata ?? false,
     dynamicImport: true,
     esModuleInterop: options.esModuleInterop ?? false,
-    keepClassNames: true,
-    // paths: options.paths as Options['paths'],
+    keepClassNames: true
   }
 }
