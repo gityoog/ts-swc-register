@@ -74,10 +74,11 @@ function toTsTarget(target) {
         case typescript_1.default.ScriptTarget.ES2020:
             return 'es2020';
         case typescript_1.default.ScriptTarget.ES2021:
+            return 'es2021';
         case typescript_1.default.ScriptTarget.ES2022:
         case typescript_1.default.ScriptTarget.ESNext:
         case typescript_1.default.ScriptTarget.Latest:
-            return 'es2021';
+            return 'es2022';
         case typescript_1.default.ScriptTarget.JSON:
             return 'es5';
     }

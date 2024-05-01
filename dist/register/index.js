@@ -31,8 +31,14 @@ const pirates_1 = require("pirates");
 const core_1 = require("@swc-node/core");
 const fs_1 = __importDefault(require("fs"));
 const module_1 = __importDefault(require("module"));
+const source_map_support_1 = __importDefault(require("source-map-support"));
+source_map_support_1.default.install({
+    hookRequire: true
+});
 const Module = (global.module && module.constructor.length > 1 ? module.constructor : module_1.default);
-function register() {
+let Config = {};
+function register(config = {}) {
+    Config = config;
     const extensions = Module._extensions;
     const jsLoader = extensions['.js'];
     extensions['.js'] = function (module, filename) {
@@ -62,7 +68,10 @@ exports.default = register;
 let tsConfig;
 function compileTs(source, filename) {
     if (!tsConfig) {
-        if (process.argv[1]) {
+        if (Config.tsconfig) {
+            tsConfig = (0, config_1.default)(Config.tsconfig);
+        }
+        if (!tsConfig && process.argv[1]) {
             tsConfig = (0, config_1.default)(process.argv[1]);
         }
         if (!tsConfig) {
