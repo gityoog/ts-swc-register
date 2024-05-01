@@ -4,14 +4,23 @@ import { transformSync } from '@swc-node/core'
 import fs from 'fs'
 import type { Options } from '@swc-node/core'
 import BuiltinModule from 'module'
+import sourceMapSupport from 'source-map-support'
+
+sourceMapSupport.install({
+  hookRequire: true
+})
 
 const Module = (global.module && module.constructor.length > 1 ? module.constructor : BuiltinModule) as unknown as {
   _extensions: Record<string, (module: {
     _compile: (content: string, filename: string) => string
   }, filename: string) => any>
 }
-
-export default function register() {
+type Config = {
+  tsconfig?: string
+}
+let Config: Config = {}
+export default function register(config: Config = {}) {
+  Config = config
   const extensions = Module._extensions
   const jsLoader = extensions['.js']
   extensions['.js'] = function (module, filename) {
@@ -43,7 +52,10 @@ let tsConfig: Options | undefined
 
 function compileTs(source: string, filename: string) {
   if (!tsConfig) {
-    if (process.argv[1]) {
+    if (Config.tsconfig) {
+      tsConfig = getConfig(Config.tsconfig)
+    }
+    if (!tsConfig && process.argv[1]) {
       tsConfig = getConfig(process.argv[1])
     }
     if (!tsConfig) {
