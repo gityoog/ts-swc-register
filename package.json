@@ -1,6 +1,6 @@
 {
   "name": "ts-swc-register",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "ts-swc-register support esm and cjs",
   "main": "./dist/index.js",
   "scripts": {

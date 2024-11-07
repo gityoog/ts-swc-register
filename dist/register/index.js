@@ -41,7 +41,7 @@ function register(config = {}) {
     Config = config;
     const extensions = Module._extensions;
     const jsLoader = extensions['.js'];
-    extensions['.js'] = function (module, filename) {
+    extensions['.mjs'] = extensions['.js'] = function (module, filename) {
         try {
             return jsLoader.call(this, module, filename);
         }
