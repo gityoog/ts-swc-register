@@ -24,11 +24,12 @@ export default function register(config: Config = {}) {
   const extensions = Module._extensions
   const jsLoader = extensions['.js']
   extensions['.mjs'] = extensions['.js'] = function (module, filename) {
+    const isMjs = filename.endsWith('.mjs')
     try {
       return jsLoader.call(this, module, filename)
     } catch (error: any) {
       // console.log(error.message)
-      if (error.message.includes('Cannot use import statement outside a module') || error.code === 'ERR_REQUIRE_ESM') {
+      if (isMjs || error.message.includes('Cannot use import statement outside a module') || error.code === 'ERR_REQUIRE_ESM') {
         let content = fs.readFileSync(filename, 'utf8')
         const { code } = transformSync(content, filename, {
           ...tsConfig,
