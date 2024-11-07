@@ -47,8 +47,7 @@ function register(config = {}) {
             return jsLoader.call(this, module, filename);
         }
         catch (error) {
-            // console.log(error.message)
-            if (isMjs || error.message.includes('Cannot use import statement outside a module') || error.code === 'ERR_REQUIRE_ESM') {
+            if (isMjs || error.message.includes('Unexpected token \'export\'') || error.message.includes('Cannot use import statement outside a module') || error.code === 'ERR_REQUIRE_ESM') {
                 let content = fs_1.default.readFileSync(filename, 'utf8');
                 const { code } = (0, core_1.transformSync)(content, filename, Object.assign(Object.assign({}, tsConfig), { module: 'commonjs' }));
                 // console.log('transformSync:', filename)
